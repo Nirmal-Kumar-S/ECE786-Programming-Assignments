@@ -1,0 +1,48 @@
+CUDA Programming Tutorial
+
+
+1.	CUDA Environment Setup
+- Download the zip file. You can find it under "CUDA Programming Tutorial" section in the "Programming Assignments" page of the course website (at the bottom of the page). 
+- Run these commands to extract the directory and set the environment variables: 
+$ unzip vectorAdd.zip
+$ cd vectorAdd
+
+2.	Running the Example
+To build the example, run these commands:
+$ make
+$ ./vectorAdd
+The terminal should show `Test PASSED` if the environment has been successfully setup. You can study the Makefile to learn how to compile a CUDA program. And vectorAdd.cu is a good example for CUDA 
+starters. If you want to see more examples, you can look into /usr/local/cuda-8.0/samples directory. You can also copy the samples/ directory to you home and run.
+
+3.	Programming Guide
+I found the following link quite useful for CUDA beginners:
+http://www.nvidia.com/docs/IO/116711/sc11-cuda-c-basics.pdf
+You can also use the CUDA manual for detailed information:
+http://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#axzz40NuV3ZXh
+
+4.	Program Correctness
+As demonstrated in the vectorAdd code, a typical way to check the correctness of GPU code is to compare the result with a serialized CPU version of code. 
+
+5.	Timing
+To get the accurate performance of your program, timing is important. Note that the clock() function doesn't work for timing GPU program. Also, the time command is not recommended because we only focus on 
+the optimization of kernel code. My suggestion is to insert timers before and after the kernel execution with gettimeofday() functions. Here is an example:
+
+  struct timeval begin, end; 
+  gettimeofday (&begin, NULL); 
+  kernel<<<grid, block>>>();
+  gettimeofday (&end, NULL); 
+  int time_in_us = 1e6 * (end.tv_sec - begin.tv_sec) + (end.tv_usec - begin.tv_usec);
+
+6.	Profiling (Advanced users)
+You can get optimization suggestions and run-time information by using Nvidia Visual Profiler (NVVP). To launch NVVP on Hydra, you need to use a ssh client which supports X11 forwarding. The client I use (on Windows) is MobaXterm, which you can download from here: 
+http://mobaxterm.mobatek.net/
+After logged in, you can launch NVVP by simply typing "nvvp" on the command line. Here is a link introducing how to use NVVP:
+https://devblogs.nvidia.com/parallelforall/cudacasts-episode-19-cuda-6-guided-performance-analysis-visual-profiler/
+
+7.	Sugesstions
+-	For starters, please study vectorAdd example carefully before coding.
+-	Write a simple version and test the correctness before you implement any optimization.
+-	The simple version can be a good baseline to be compared with the optimized version.
+-	Although the error checking for CUDA API seems redundant and boring, it can save you much time for debugging.
+
+
